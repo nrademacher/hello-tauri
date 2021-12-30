@@ -1,26 +1,24 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { invoke } from '@tauri-apps/api/tauri'
+import React, { useCallback, useEffect, useState } from 'react'
+import './App.css'
 
-function App() {
+const App = () => {
+    const [counter, setCounter] = useState<number>(-1)
+
+    useEffect(() => {
+        invoke('increment_counter', { delta: 0 }).then((result) => setCounter(result as number)).catch(console.error)
+    }, [setCounter])
+
+    const increment = useCallback(async () => {
+        const result = await invoke('increment_counter', { delta: 1 }) as number
+        setCounter(result)
+    }, [setCounter])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <button onClick={increment}>Increment</button> {counter}
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
